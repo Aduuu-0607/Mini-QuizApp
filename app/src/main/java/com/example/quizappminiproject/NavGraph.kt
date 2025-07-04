@@ -46,6 +46,20 @@ fun NavGraph() {
         composable("androidQuizscreen") {
             AndroidQuizScreen(navController)
         }
+        composable("customizeQuiz") {
+            CustomizeQuizScreen(navController)
+        }
+        composable(
+            route = "reviewscore/{score}",
+            arguments = listOf(navArgument("score") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val score = backStackEntry.arguments?.getInt("score") ?: 0
+            ReviewScoreScreen(score = score, navController = navController)
+        }
+        composable("edit_profile") {
+            EditProfileScreen(navController = navController)
+        }
+
 
     }
 }

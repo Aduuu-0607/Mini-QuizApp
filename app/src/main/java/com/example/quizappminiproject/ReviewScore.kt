@@ -29,13 +29,15 @@ fun ReviewScoreScreen(score: Int, navController: NavHostController) {
             color = Color(0xFF0D47A1),
             modifier = Modifier.padding(bottom = 16.dp)
         )
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Text(
-            text = "$score / 5",
-            fontSize = 48.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF1976D2)
-        )
+            Text(
+                text = "$score / 5",
+                fontSize = 48.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color(0xFF1976D2)
+            )
+
 
         Spacer(modifier = Modifier.height(32.dp))
 

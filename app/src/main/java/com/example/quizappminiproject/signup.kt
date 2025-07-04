@@ -9,16 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.quizappminiproject.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun AuthScreen(onAuthSuccess: () -> Unit) {
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
+    val database = FirebaseDatabase.getInstance().getReference("users")
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isLogin by remember { mutableStateOf(true) } // Toggle login/signup
+    var name by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+
+    var isLogin by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
@@ -35,6 +41,26 @@ fun AuthScreen(onAuthSuccess: () -> Unit) {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (!isLogin) {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = phone,
+                onValueChange = { phone = it },
+                label = { Text("Phone") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         OutlinedTextField(
             value = email,
@@ -61,7 +87,7 @@ fun AuthScreen(onAuthSuccess: () -> Unit) {
                 errorMessage = ""
 
                 if (isLogin) {
-                    // LOGIN
+                    // 🔐 LOGIN
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             isLoading = false
@@ -73,13 +99,24 @@ fun AuthScreen(onAuthSuccess: () -> Unit) {
                             }
                         }
                 } else {
-                    // SIGN UP
+                    // 📝 SIGN UP & CREATE IN DATABASE
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener { task ->
                             isLoading = false
                             if (task.isSuccessful) {
-                                Toast.makeText(context, "Account Created", Toast.LENGTH_SHORT).show()
-                                onAuthSuccess()
+                                val uid = auth.currentUser?.uid
+                                val newUser = User(name, email, phone)
+
+                                uid?.let {
+                                    database.child(it).setValue(newUser)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(context, "Account Created & Saved", Toast.LENGTH_SHORT).show()
+                                            onAuthSuccess()
+                                        }
+                                        .addOnFailureListener {
+                                            errorMessage = "Data save failed: ${it.message}"
+                                        }
+                                }
                             } else {
                                 errorMessage = task.exception?.message ?: "Signup failed"
                             }

@@ -1,5 +1,7 @@
 package com.example.quizappminiproject
 
+import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,10 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.quizappminiproject.R
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -20,6 +25,10 @@ fun HomeScreen(navController: NavHostController) {
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF2193b0), Color(0xFF6dd5ed))
     )
+
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("quiz_prefs", Context.MODE_PRIVATE)
+    val lastScore = sharedPreferences.getInt("last_score", 0)
 
     Column(
         modifier = Modifier
@@ -29,20 +38,27 @@ fun HomeScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // ✅ SVG Logo (converted to VectorDrawable)
+        Image(
+            painter = painterResource(id = R.drawable.hootsuite), // Your SVG icon file
+            contentDescription = "App Logo",
+            modifier = Modifier
+                .size(150.dp)
+                .padding(bottom = 24.dp)
+        )
 
+        // 🎉 Welcome Text
         Text(
-            text = "🎉 Welcome to QuizApp",
+            text = "🎉 Welcome to EngiCards",
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color.White,
-            modifier = Modifier.padding(bottom = 50.dp)
+            modifier = Modifier.padding(bottom = 40.dp)
         )
 
-        // 🚀 Start Quiz
+        // 🚀 Start Quiz Button
         Button(
-            onClick = {
-                navController.navigate("bottom_nav_home")
-            },
+            onClick = { navController.navigate("bottom_nav_home") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
@@ -59,11 +75,9 @@ fun HomeScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 📊 View Score (Optional)
+        // 📊 View Last Score
         Button(
-            onClick = {
-           // ✅ Navigate to ReviewScoreScreen
-            },
+            onClick = { navController.navigate("reviewscore/$lastScore") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
@@ -80,11 +94,9 @@ fun HomeScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ⚙️ Customize or About
+        // ⚙️ Customize Quiz
         Button(
-            onClick = {
-                navController.navigate("customizeQuiz") // ✅ Navigate to CustomizeQuizScreen
-            },
+            onClick = { navController.navigate("customizeQuiz") },
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier

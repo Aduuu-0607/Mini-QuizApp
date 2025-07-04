@@ -17,12 +17,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun Score(
     score: Int,
     navController: NavHostController
 ) {
+    // Save score in shared preferences or datastore (temporary fix)
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("quiz_prefs", Context.MODE_PRIVATE)
+    sharedPreferences.edit().putInt("last_score", score).apply()
+
     val backgroundGradient = Brush.verticalGradient(
         listOf(Color(0xFF2193b0), Color(0xFF6dd5ed))
     )
